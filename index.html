@@ -29,9 +29,9 @@
 		<aside class="filter">
 			<h2>Filter</h2>
 			<ul class="filter__list">
-				<li data-filter="all">All</li>
-				<li data-filter="today">Today</li>
-				<li data-filter="important">
+				<li class="filter__list-item" data-filter="all">All</li>
+				<li class="filter__list-item" data-filter="today">Today</li>
+				<li class="filter__list-item" data-filter="important">
 					<span><i class="bi bi-star"></i></span>
 					<span><i class="bi bi-star-fill"></i></span>
 					<span>Important</span>
@@ -60,7 +60,7 @@
 			</section>
 			<section id="task-board">
 				<h2>Task List</h2>
-				<ul class="task-list">
+				<ul id="task-list" class="task-board__list">
 					<!-- Tasks -->
 				</ul>
 			</section>
@@ -71,6 +71,7 @@
 			<small>&copy; 2025 Hatsumi Shimizu</small>
 		</div>
 	</footer>
+	<script src="main.js"></script>
 </body>
 
 </html>
