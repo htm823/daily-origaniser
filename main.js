@@ -1,17 +1,21 @@
 'use strict';
 
-const titleInput = document.getElementById('task-title');
-const dateInput = document.getElementById('task-date');
+// DOM Elements
+const titleInput  = document.getElementById('task-title');
+const dateInput   = document.getElementById('task-date');
 const labelSelect = document.getElementById('task-label');
-const addBtn = document.getElementById('add-task-btn');
-const taskList = document.getElementById('task-list');
+const addBtn      = document.getElementById('add-task-btn');
+const taskList    = document.getElementById('task-list');
 const filterItems = document.querySelectorAll('.filter__list-item');
 
+// Stores all task objects
 let tasks = [];
 
+
+// Add task
 addBtn.addEventListener('click', () => {
 	const title = titleInput.value.trim();
-	const date = dateInput.value;
+	const date  = dateInput.value;
 	const label = labelSelect.value;
 
 	if (!title) return;
@@ -22,84 +26,97 @@ addBtn.addEventListener('click', () => {
 		date: date,
 		label: label,
 		important: false,
-		createdAt: Date.now(),
+		createAt: Date.now(),
 	};
 
 	tasks.push(newTask);
 	renderTasks(tasks);
 
-	titleInput.value = '';
-	dateInput.value = '';
+	titleInput.value  = '';
+	dateInput.value   = '';
 	labelSelect.value = '';
 });
 
-// Task Card Template
+// Generates a task card based on a task object
 function createTaskHTML(task) {
+	const hasValue = task.date || task.label;
 	return `
 		<li class="task-board__list-item" data-id="${task.id}">
 			<div class="task-board__card">
 				<h3>${task.title}</h3>
-				<span class="task-board__card-text">
-					<span class="task-board__card-date">${task.date || ''}</span>
-					<span class="task-board__card-label">${task.label || ''}</span>
-				</span>
+				${
+					hasValue
+						? `
+					<p>
+						${task.date ? `<span class="task-board__card-date">${task.date}</span>` : ''}
+						${task.label ? `<span class="task-board__card-label">${task.label}</span>` : ''}
+					</p>`
+						: ''
+				}
 			</div>
-			<div class="task-board__actions">
-				<button class="task-board__task-important">
+			<div class="task-board__card-actions">
+				<button class="task-board__important-btn">
 					<i class="bi bi-star${task.important ? '-fill' : ''}"></i>
 				</button>
-				<button class="task-board__task-edit"><i class="bi bi-pencil"></i></button>
-        		<button class="task-board__task-delete"><i class="bi bi-trash"></i></button>
+				<button class="task-board__edit-btn"><i class="bi bi-pencil"></i></button>
+				<button class="task-board__delete-btn"><i class="bi bi-trash"></i></button>
 			</div>
-		</li>`;
+		</li>
+	`;
 }
 
+// Clears the list and inserts task HTML
 function renderTasks(list) {
 	taskList.innerHTML = '';
 
-	list.forEach(task => {
+	list.forEach((task) => {
 		taskList.insertAdjacentHTML('beforeend', createTaskHTML(task));
 	});
 
 	addCardEvents();
 }
 
+// Attach events to each task card
 function addCardEvents() {
-	const deleteBtns = document.querySelectorAll('.task-board__task-delete');
-	const importantBtns = document.querySelectorAll('.task-board__task-important');
-	const editBtns = document.querySelectorAll('.task-board__task-edit');
+	const deleteBtns    = document.querySelectorAll('.task-board__delete-btn');
+	const importantBtns = document.querySelectorAll('.task-board__important-btn');
+	const editBtns      = document.querySelectorAll('.task-board__edit-btn');
 
-	deleteBtns.forEach(btn => {
-		btn.addEventListener('click', (e) => {
-			const id = getTaskId(e.target);
-			tasks = tasks.filter(task => task.id != id);
+	// Delete task
+	deleteBtns.forEach((deleteBtn) => {
+		deleteBtn.addEventListener('click', (e) => {
+			const targetId = getTaskId(e.target);
+			tasks          = tasks.filter((task) => task.id != targetId);
 			renderTasks(tasks);
 		});
 	});
 
-	importantBtns.forEach(btn => {
-		btn.addEventListener('click', (e) => {
-			const id = getTaskId(e.target);
-			const task = tasks.find(t => t.id == id);
-			task.important = !task.important;
+	// Toggle important
+	importantBtns.forEach((importantBtn) => {
+		importantBtn.addEventListener('click', (e) => {
+			const targetId       = getTaskId(e.target);
+			const targetTask     = tasks.find((task) => task.id == targetId);
+			targetTask.important = !targetTask.important;
 			renderTasks(tasks);
 		});
 	});
 
-	editBtns.forEach(btn => {
-		btn.addEventListener('click', (e) => {
-			const id = getTaskId(e.target);
-			console.log('edit:', id);
-			// Implement inline editting later
+	// Edit task (to be implemented)
+	editBtns.forEach((editBtn) => {
+		editBtn.addEventListener('click', () => {
+			const targetId = getTaskId(e.target);
+			console.log('edit:', targetId);
 		});
 	});
-
-	function getTaskId(el) {
-		return el.closest('.task-board__list-item').dataset.id
-	}
 }
 
-filterItems.forEach(item => {
+// Get task id from clicked element
+function getTaskId(el) {
+	return el.closest('.task-board__list-item').dataset.id;
+}
+
+// Filter tasks
+filterItems.forEach((item) => {
 	item.addEventListener('click', () => {
 		const filter = item.dataset.filter;
 
@@ -107,11 +124,11 @@ filterItems.forEach(item => {
 
 		if (filter === 'today') {
 			const today = new Date().toISOString().split('T')[0];
-			filtered = tasks.filter(task => task.date === today);
+			filtered = tasks.filter((task) => task.date === today);
 		}
 
 		if (filter === 'important') {
-			filtered = tasks.filter(task => task.important);
+			filtered = tasks.filter((task) => task.important);
 		}
 
 		renderTasks(filtered);
