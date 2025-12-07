@@ -3,6 +3,7 @@
 const taskInput = document.getElementById('task-input');
 const addTaskForm = document.getElementById('add-task-form');
 const taskList = document.getElementById('task-list');
+const clearAllBtn = document.getElementById('clear-all-btn');
 
 addTaskForm.addEventListener('submit', (e) => {
 	e.preventDefault();
@@ -81,3 +82,12 @@ addTaskForm.addEventListener('submit', (e) => {
 	taskInput.value = '';
 });
 
+// Clear all
+clearAllBtn.addEventListener('click', () => {
+	if (!taskList.firstChild) return;
+
+	const confirmed = confirm('Are you sure you want to clear all tasks?');
+	if (!confirmed) return;
+
+	taskList.innerHTML = '';
+});
