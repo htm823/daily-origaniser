@@ -5,70 +5,43 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<title>Daily Organiser</title>
 </head>
 
 <body>
 	<header class="header">
-		<div class="header__container">
+		<div class="header__inner container">
 			<h1>Daily Organiser</h1>
-			<!-- Brush up icons later -->
-			<ul class="header__mode-list">
-				<li>
-					<span><i class="bi bi-sun"></i></span>
-					<span><i class="bi bi-sun-fill"></i></span>
-				</li>
-				<li>
-					<span><i class="bi bi-moon-stars"></i></span>
-					<span><i class="bi bi-moon-stars-fill"></i></span>
-				</li>
-			</ul>
+			<div class="mode-toggle">
+				<span class="mode-toggle__light">
+					<i class="bi bi-brightness-high"></i>
+					<i class="bi bi-brightness-high-fill"></i>
+				</span>
+				<span class="mode-toggle__divider">&frasl;</span>
+				<span class="mode-toggle__dark">
+					<i class="bi bi-moon-stars"></i>
+					<i class="bi bi-moon-stars-fill"></i>
+				</span>
+			</div>
 		</div>
 	</header>
 	<main class="main">
-		<aside class="filter">
-			<h2>Filter</h2>
-			<ul class="filter__list">
-				<li class="filter__list-item" data-filter="all">All</li>
-				<li class="filter__list-item" data-filter="today">Today</li>
-				<li class="filter__list-item" data-filter="important">
-					<span><i class="bi bi-star"></i></span>
-					<span><i class="bi bi-star-fill"></i></span>
-					<span>Important</span>
-				</li>
+		<div class="main__inner container">
+			<form id="add-task-form" class="add-task">
+				<input id="task-input" class="add-task__task-input" name="task" type="text" placeholder="New Task">
+				<button id="add-btn" type="submit" class="add-task__btn btn">
+					<i class="bi bi-plus-lg"></i>
+				</button>
+			</form>
+			<ul id="task-list" class="task__list">
+				<!-- Insert tasks -->
 			</ul>
-		</aside>
-		<div class="task">
-			<section id="add-task" class="add-task__section">
-				<h2>Add Task</h2>
-				<form>
-					<input type="text" id="task-title" class="add-task__title-input" placeholder="Task title" />
-					<div class="add-task__labels">
-						<!-- datepickerで修正 -->
-						<input type="date" id="task-date" class="add-task__date-input">
-						<span>&frasl;</span>
-						<select id="task-label">
-							<option value="">Label</option>
-							<option value="work">Work</option>
-							<option value="personal">Personal</option>
-						</select>
-					</div>
-					<button id="add-task-btn" class="add-task__btn" type="button">
-						<i class="bi bi-plus-lg"></i>
-					</button>
-				</form>
-			</section>
-			<section id="task-board">
-				<h2>Task List</h2>
-				<ul id="task-list" class="task-board__list">
-					<!-- Tasks -->
-				</ul>
-			</section>
 		</div>
 	</main>
-	<footer>
-		<div class="footer__container">
-			<small>&copy; 2025 Hatsumi Shimizu</small>
+	<footer class="footer">
+		<div class="footer__inner container">
+			<small>&copy; Daily Organiser by Hatsumi Shimizu</small>
 		</div>
 	</footer>
 	<script src="main.js"></script>
