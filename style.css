@@ -133,6 +133,31 @@ header {
 	margin: 0 1rem 0 0;
 }
 
+.task__checkbox:checked + .task__custom-checkbox {
+	background-color: var(--color-stroke-strong);
+}
+
+.task__checkbox:checked + .task__custom-checkbox::before {
+	content: '\F633';
+	font-family: 'bootstrap-icons';
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 1.4rem;
+	height: 1.4rem;
+	color: var(--color-bg);
+	font-size: 1.8rem;
+}
+
+.task__name {
+	color: var(--color-text-strong);
+}
+
+.task__checkbox:checked ~ .task__name {
+	text-decoration-line: line-through;
+	color: var(--color-stroke-strong);
+}
+
 .task__btns {
 	display: flex;
 	align-items: end;

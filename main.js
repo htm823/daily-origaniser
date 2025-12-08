@@ -33,6 +33,20 @@ function renderTask(task) {
 	const checkbox = document.createElement('input');
 	checkbox.type  = 'checkbox';
 	checkbox.classList.add('task__checkbox');
+	checkbox.checked = task.completed;
+
+	checkbox.addEventListener('change', () => {
+		const itemId = taskItem.dataset.id;
+
+		tasks = tasks.map((task) => {
+			if (task.id === itemId) {
+				return { ...task, completed: checkbox.checked };
+			}
+			return task;
+		});
+
+		saveTasks();
+	});
 
 	// Label
 	const checkLabel = document.createElement('label');
@@ -115,6 +129,7 @@ addTaskForm.addEventListener('submit', (e) => {
 	const newTask = {
 		id: crypto.randomUUID(),
 		text: taskText,
+		completed: false,
 	}
 
 	tasks.push(newTask);
