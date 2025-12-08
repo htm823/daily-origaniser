@@ -86,6 +86,7 @@ function renderTask(task) {
 	});
 
 	// Build label
+	checkLabel.appendChild(checkbox);
 	checkLabel.appendChild(customCheckbox);
 	checkLabel.appendChild(taskName);
 
@@ -94,7 +95,6 @@ function renderTask(task) {
 	btnGroup.appendChild(deleteBtn);
 
 	// Assemble task item
-	taskItem.appendChild(checkbox);
 	taskItem.appendChild(checkLabel);
 	taskItem.appendChild(btnGroup);
 
