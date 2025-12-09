@@ -1,19 +1,19 @@
 'use strict';
 
-const taskInput   = document.getElementById('task-input');
+const taskInput = document.getElementById('task-input');
 const addTaskForm = document.getElementById('add-task-form');
-const taskList    = document.getElementById('task-list');
+const taskList = document.getElementById('task-list');
 const clearAllBtn = document.getElementById('clear-all-btn');
 
-// Memory in a local storage
+// Store task data in localStorage
 let tasks = [];
 
-// Save tasks
+// Save all tasks to localStorage
 function saveTasks() {
 	localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// Load tasks
+// Load saved tasks from localStorage
 function loadTasks() {
 	const storedTasks = localStorage.getItem('tasks');
 	if (!storedTasks) return;
@@ -22,28 +22,24 @@ function loadTasks() {
 	tasks.forEach((task) => renderTask(task));
 }
 
-// Render tasks
+// Render a task item
 function renderTask(task) {
-	// Each task
+	// Create a list item for the task
 	const taskItem = document.createElement('li');
 	taskItem.classList.add('task__item');
 	taskItem.dataset.id = task.id;
 
 	// Checkbox
 	const checkbox = document.createElement('input');
-	checkbox.type  = 'checkbox';
+	checkbox.type = 'checkbox';
 	checkbox.classList.add('task__checkbox');
 	checkbox.checked = task.completed;
 
 	checkbox.addEventListener('change', () => {
 		const itemId = taskItem.dataset.id;
-
-		tasks = tasks.map((task) => {
-			if (task.id === itemId) {
-				return { ...task, completed: checkbox.checked };
-			}
-			return task;
-		});
+		tasks = tasks.map(task =>
+			task.id === itemId ? { ...task, completed: checkbox.checked } : task
+		);
 
 		saveTasks();
 	});
@@ -93,10 +89,12 @@ function renderTask(task) {
 		const confirmed = confirm('Are you sure you want to delete this task?');
 		if (!confirmed) return;
 
-		tasks = tasks.filter((task) => task.id !== itemId);
+		tasks = tasks.filter(task => task.id !== itemId);
 		saveTasks();
 
 		taskItem.remove();
+
+		updateClearAllVisibility();
 	});
 
 	// Build label
@@ -116,6 +114,31 @@ function renderTask(task) {
 	taskList.appendChild(taskItem);
 }
 
+// Update Clear All button visibility
+function updateClearAllVisibility() {
+	if (taskList.childElementCount === 0) {
+		clearAllBtn.style.display = 'none';
+	} else {
+		clearAllBtn.style.display = 'block';
+	}
+}
+
+// Initialize the app
+function init() {
+	loadTasks();
+	updateClearAllVisibility();
+}
+
+// Create a task
+function createTask(taskText) {
+	return {
+		id: crypto.randomUUID(),
+		text: taskText,
+		completed: false,
+	}
+}
+
+// Add a task
 addTaskForm.addEventListener('submit', (e) => {
 	e.preventDefault();
 
@@ -126,23 +149,21 @@ addTaskForm.addEventListener('submit', (e) => {
 		return;
 	}
 
-	const newTask = {
-		id: crypto.randomUUID(),
-		text: taskText,
-		completed: false,
-	}
+	const newTask = createTask(taskText);
 
 	tasks.push(newTask);
 	saveTasks();
 
 	renderTask(newTask);
 
+	updateClearAllVisibility();
+
 	taskInput.value = '';
 });
 
-// Clear all
+// Clear all tasks
 clearAllBtn.addEventListener('click', () => {
-	if (!taskList.firstChild) return;
+	if (taskList.childElementCount === 0) return;
 
 	const confirmed = confirm('Are you sure you want to clear all tasks?');
 	if (!confirmed) return;
@@ -150,7 +171,10 @@ clearAllBtn.addEventListener('click', () => {
 	tasks = [];
 	saveTasks();
 
+	updateClearAllVisibility();
+
 	taskList.innerHTML = '';
 });
 
-window.addEventListener('DOMContentLoaded', loadTasks);
+// Run init() when the DOM is fully loaded
+window.addEventListener('DOMContentLoaded', init);

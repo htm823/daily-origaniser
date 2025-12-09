@@ -106,6 +106,7 @@ header {
 	background-color: var(--color-bg);
 	border: none;
 	color: var(--color-text-weak);
+	display: none;
 }
 
 .task__item {
