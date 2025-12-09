@@ -71,7 +71,58 @@ function renderTask(task) {
 	editBtn.appendChild(pencilIcon);
 
 	editBtn.addEventListener('click', () => {
-		// Edit a task
+		const currentText = taskName.textContent;
+
+		// Create input for editing
+		const editInput = document.createElement('input');
+		editInput.type = 'text';
+		editInput.value = currentText;
+		editInput.classList.add('task__edit-input');
+
+		// Replace the text span with input
+		taskName.replaceWith(editInput);
+		editInput.focus();
+
+		// Save on Enter
+		editInput.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') {
+				finishEditing();
+			}
+
+			// Cancel with Escape
+			if (e.key === 'Escape') {
+				cancelEditing();
+			}
+		});
+
+		// Save when focus is lost
+		editInput.addEventListener('blur', finishEditing);
+
+		function finishEditing() {
+			const newValue = editInput.value.trim();
+
+			if (!newValue) {
+				cancelEditing();
+				return;
+			}
+
+			if (newValue !== currentText) {
+				tasks = tasks.map(task =>
+					task.id === taskItem.dataset.id
+					? { ...task, text: newValue }
+					: task
+				);
+				saveTasks();
+			}
+
+			taskName.textContent = newValue;
+			editInput.replaceWith(taskName);
+		}
+
+		function cancelEditing() {
+			taskName.textContent = currentText;
+			editInput.replaceWith(taskName);
+		}
 	});
 
 	// Delete button
@@ -113,6 +164,8 @@ function renderTask(task) {
 	// Insert into list
 	taskList.appendChild(taskItem);
 }
+
+
 
 // Update Clear All button visibility
 function updateClearAllVisibility() {
