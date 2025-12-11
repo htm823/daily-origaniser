@@ -1,8 +1,12 @@
 'use strict';
 
 const taskInput = document.getElementById('task-input');
+const categoryInput = document.getElementById('category-input');
 const addTaskForm = document.getElementById('add-task-form');
 const taskList = document.getElementById('task-list');
+const filterAll = document.getElementById('filter-all');
+const filterWork = document.getElementById('filter-work');
+const filterPersonal = document.getElementById('filter-personal');
 const clearAllBtn = document.getElementById('clear-all-btn');
 
 // Store task data in localStorage
@@ -20,6 +24,8 @@ function loadTasks() {
 
 	tasks = JSON.parse(storedTasks);
 	tasks.forEach((task) => renderTask(task));
+
+	filterTasks('all');
 }
 
 // Render a task item
@@ -37,9 +43,7 @@ function renderTask(task) {
 
 	checkbox.addEventListener('change', () => {
 		const itemId = taskItem.dataset.id;
-		tasks = tasks.map(task =>
-			task.id === itemId ? { ...task, completed: checkbox.checked } : task
-		);
+		tasks = tasks.map((task) => (task.id === itemId ? { ...task, completed: checkbox.checked } : task));
 
 		saveTasks();
 	});
@@ -107,11 +111,7 @@ function renderTask(task) {
 			}
 
 			if (newValue !== currentText) {
-				tasks = tasks.map(task =>
-					task.id === taskItem.dataset.id
-					? { ...task, text: newValue }
-					: task
-				);
+				tasks = tasks.map((task) => (task.id === taskItem.dataset.id ? { ...task, text: newValue } : task));
 				saveTasks();
 			}
 
@@ -140,7 +140,7 @@ function renderTask(task) {
 		const confirmed = confirm('Are you sure you want to delete this task?');
 		if (!confirmed) return;
 
-		tasks = tasks.filter(task => task.id !== itemId);
+		tasks = tasks.filter((task) => task.id !== itemId);
 		saveTasks();
 
 		taskItem.remove();
@@ -165,11 +165,38 @@ function renderTask(task) {
 	taskList.appendChild(taskItem);
 }
 
+// Filter tasks
+function filterTasks(filter) {
+	taskList.innerHTML = '';
 
+	tasks.forEach(task => {
+		if (filter === 'all' || task.category === filter) {
+			renderTask(task);
+		}
+	});
+}
 
 // Update Clear All button visibility
 function updateClearAllVisibility() {
-	if (taskList.childElementCount === 0) {
+	let visibleTasks = 0;
+
+	// All tab
+	if (currentFilter === 'all') {
+		visibleTasks = tasks.length;
+	}
+
+	// Work tab
+	else if (currentFilter === 'work') {
+		visibleTasks = tasks.filter(t => t.category === 'work').length;
+	}
+
+	// Personal tab
+	else if (currentFilter === 'personal') {
+		visibleTasks = tasks.filter(t => t.category === 'personal').length;
+	}
+
+	// Change visibility
+	if (visibleTasks === 0) {
 		clearAllBtn.style.display = 'none';
 	} else {
 		clearAllBtn.style.display = 'block';
@@ -183,12 +210,13 @@ function init() {
 }
 
 // Create a task
-function createTask(taskText) {
+function createTask(taskText, category) {
 	return {
 		id: crypto.randomUUID(),
 		text: taskText,
+		category: category,
 		completed: false,
-	}
+	};
 }
 
 // Add a task
@@ -202,7 +230,8 @@ addTaskForm.addEventListener('submit', (e) => {
 		return;
 	}
 
-	const newTask = createTask(taskText);
+	const category = categoryInput.value || 'all';
+	const newTask = createTask(taskText, category);
 
 	tasks.push(newTask);
 	saveTasks();
@@ -212,6 +241,27 @@ addTaskForm.addEventListener('submit', (e) => {
 	updateClearAllVisibility();
 
 	taskInput.value = '';
+});
+
+// Current filter
+let currentFilter = 'all';
+
+filterAll.addEventListener('change', () => {
+	currentFilter = 'all';
+	filterTasks('all');
+	updateClearAllVisibility();
+});
+
+filterWork.addEventListener('change', () => {
+	currentFilter = 'work';
+	filterTasks('work');
+	updateClearAllVisibility();
+});
+
+filterPersonal.addEventListener('change', () => {
+	currentFilter = 'personal';
+	filterTasks('personal');
+	updateClearAllVisibility();
 });
 
 // Clear all tasks
