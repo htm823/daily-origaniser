@@ -17,27 +17,51 @@
 	<header class="header">
 		<div class="header__inner container">
 			<h1>Daily Organiser</h1>
-			<div class="mode-toggle">
+			<!-- Implement later -->
+			<!-- <div class="mode-toggle">
 				<span class="mode-toggle__dark">
 					<i class="bi bi-moon-stars"></i>
 					<i class="bi bi-moon-stars-fill"></i>
 				</span>
-			</div>
+			</div> -->
 		</div>
 	</header>
 	<main class="main">
 		<div class="main__inner container">
 			<form id="add-task-form" class="add-task">
-				<input id="task-input" class="add-task__task-input" name="task" type="text" placeholder="New task">
+				<div class="add-task__input-field">
+					<input id="task-input" class="add-task__task-input" name="task" type="text" placeholder="New task">
+				</div>
+				<div class="add-task__input-field">
+					<select id="category-input" class="add-task__category-input">
+						<option value="">Category</option>
+						<option value="work">Work</option>
+						<option value="personal">Personal</option>
+					</select>
+				</div>
 				<button id="add-btn" type="submit" class="add-task__btn btn">Add task</button>
 			</form>
 			<div class="task-controls">
-				<button id="clear-all-btn" class="task-controls__btn btn">
-					<i class="bi bi-trash3"></i>
-				</button>
+				<div class="task-controls__tabs">
+					<!-- radio button for tabs -->
+					<input id="filter-all" name="filter" type="radio" class="task-controls__radio" checked>
+					<label for="filter-all" class="task-controls__tab">All</label>
+
+					<input id="filter-work" name="filter" type="radio" class="task-controls__radio">
+					<label for="filter-work" class="task-controls__tab">Work</label>
+
+					<input id="filter-personal" name="filter" type="radio" class="task-controls__radio">
+					<label for="filter-personal" class="task-controls__tab">Personal</label>
+				</div>
+				<div class="task-controls__all-task-control">
+					<button id="clear-all-btn" class="task-controls__btn btn">
+						<i class="bi bi-trash3"></i>
+					</button>
+				</div>
+
 			</div>
 			<ul id="task-list" class="task__list">
-				<!-- Insert tasks -->
+				<!-- Insert all tasks -->
 			</ul>
 		</div>
 	</main>

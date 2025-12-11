@@ -50,29 +50,28 @@ header {
 	align-items: center;
 }
 
-.bi-moon-stars-fill {
-	display: none;
-}
-
-.bi-moon-stars {
-	font-size: 2rem;
-}
-
 .add-task {
 	display: flex;
+	flex-direction: column;
+	gap: 1.8rem;
 }
 
 .add-task__task-input {
 	display: block;
-	width: 85%;
+	width: 100%;
 	border: 2px solid var(--color-stroke-strong);
-	border-right: none;
+	padding: 1.2rem 0 1.2rem 1.5rem;
+	font-size: 1.6rem;
+	border-radius: 5px;
+}
+
+.add-task__category-input {
+	width: 50%;
+	border: 2px solid var(--color-stroke-strong);
 	padding: 1rem 0 1rem 1rem;
 	font-size: 1.6rem;
-	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
+	border-radius: 5px;
+	color: var(--color-text-weak);
 }
 
 .add-task__task-input::placeholder {
@@ -81,11 +80,10 @@ header {
 
 .add-task__btn {
 	display: block;
-	width: 15%;
+	width: 25%;
 	font-size: 1.6rem;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
-	border: none;
+	padding: 1.2rem 0;
+	border-radius: 5px;
 	color: var(--color-bg);
 	display: flex;
 	justify-content: center;
@@ -95,10 +93,51 @@ header {
 }
 
 .task-controls {
+	padding: 10rem 0 2rem 0;
+	border-bottom: 1px solid var(--color-stroke-weak);
+}
+
+.task-controls__tabs {
+	display: flex;
+	flex: 1;
+	gap: 1.8rem;
+	justify-content: space-between;
+}
+
+.task-controls__radio {
+	display: none;
+}
+
+.task-controls__tab {
+	display: flex;
+	flex: 1;
+	justify-content: center;
+	padding: 1.2rem 0;
+	font-size: 1.8rem;
+	border: 2px solid var(--color-brand);
+	border-radius: 5px;
+}
+
+.task-controls__tab:hover {
+	background-color: var(--color-brand);
+	color: var(--color-bg);
+}
+
+.task-controls__radio:checked + .task-controls__tab {
+	background-color: var(--color-brand);
+	color: var(--color-bg);
+}
+
+#filter-all:checked ~ #task-list-all,
+#filter-work:checked ~ #task-list-work,
+#filter-personal:checked ~ #task-list-personal {
+	display: block;
+}
+
+.task-controls__all-task-control {
 	display: flex;
 	justify-content: end;
-	padding: 7rem 2rem 2rem 0;
-	border-bottom: 1px solid var(--color-stroke-weak);
+	padding: 5rem 0 0 0;
 }
 
 .task-controls__btn {
