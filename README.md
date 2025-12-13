@@ -72,7 +72,10 @@ No frameworks or libraries are used for application logic.
 - Due date input for tasks
 - Sub-categories and advanced filtering (tabs / refined filters)
 
-## 🚧　Status
+## 🚧 Status
 
 This project is under active development.  
 The current version focuses on core functionality, with UI and usability improvements planned incrementally.
+
+## 🌐 Live Demo
+https://dailyorganiser-piqicuptp-hatsumi-shimizus-projects.vercel.app/
