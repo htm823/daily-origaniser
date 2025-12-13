@@ -1,215 +1,41 @@
 'use strict';
 
-const taskInput = document.getElementById('task-input');
-const categoryInput = document.getElementById('category-input');
-const addTaskForm = document.getElementById('add-task-form');
-const taskList = document.getElementById('task-list');
-const filterAll = document.getElementById('filter-all');
-const filterWork = document.getElementById('filter-work');
+// DOM element references
+const taskInput      = document.getElementById('task-input');
+const categoryInput  = document.getElementById('category-input');
+const addTaskForm    = document.getElementById('add-task-form');
+const taskList       = document.getElementById('task-list');
+const filterAll      = document.getElementById('filter-all');
+const filterWork     = document.getElementById('filter-work');
 const filterPersonal = document.getElementById('filter-personal');
-const clearAllBtn = document.getElementById('clear-all-btn');
+const clearAllBtn    = document.getElementById('clear-all-btn');
 
-// Store task data in localStorage
-let tasks = [];
+// Application state
+let tasks         = [];
+let currentFilter = 'all';
 
-// Save all tasks to localStorage
-function saveTasks() {
-	localStorage.setItem('tasks', JSON.stringify(tasks));
+// Generate HTML markup for a task item
+function createTaskHTML(task) {
+	return `
+		<li class="task__item" data-id="${task.id}">
+			<label class="task__label">
+				<input type="checkbox" class="task__checkbox" ${task.completed ? 'checked' : ''}>
+				<span class="task__custom-checkbox"></span>
+				<span class="task__name">${task.text}</span>
+			</label>
+			<div class="task__btns">
+				<button class="task__btn-edit">
+					<i class="bi bi-pencil-square"></i>
+				</button>
+				<button class="task__btn-delete">
+					<i class="bi bi-trash3"></i>
+				</button>
+			</div>
+		</li>
+	`;
 }
 
-// Load saved tasks from localStorage
-function loadTasks() {
-	const storedTasks = localStorage.getItem('tasks');
-	if (!storedTasks) return;
-
-	tasks = JSON.parse(storedTasks);
-	tasks.forEach((task) => renderTask(task));
-
-	filterTasks('all');
-}
-
-// Render a task item
-function renderTask(task) {
-	// Create a list item for the task
-	const taskItem = document.createElement('li');
-	taskItem.classList.add('task__item');
-	taskItem.dataset.id = task.id;
-
-	// Checkbox
-	const checkbox = document.createElement('input');
-	checkbox.type = 'checkbox';
-	checkbox.classList.add('task__checkbox');
-	checkbox.checked = task.completed;
-
-	checkbox.addEventListener('change', () => {
-		const itemId = taskItem.dataset.id;
-		tasks = tasks.map((task) => (task.id === itemId ? { ...task, completed: checkbox.checked } : task));
-
-		saveTasks();
-	});
-
-	// Label
-	const checkLabel = document.createElement('label');
-	checkLabel.classList.add('task__label');
-
-	// Custom checkbox
-	const customCheckbox = document.createElement('span');
-	customCheckbox.classList.add('task__custom-checkbox');
-
-	// Task name
-	const taskName = document.createElement('span');
-	taskName.classList.add('task__name');
-	taskName.textContent = task.text;
-
-	// Edit & delete buttons
-	const btnGroup = document.createElement('div');
-	btnGroup.classList.add('task__btns');
-
-	// Edit button
-	const editBtn = document.createElement('button');
-	editBtn.classList.add('task__btn-edit');
-
-	const pencilIcon = document.createElement('i');
-	pencilIcon.classList.add('bi', 'bi-pencil-square');
-
-	editBtn.appendChild(pencilIcon);
-
-	editBtn.addEventListener('click', () => {
-		const currentText = taskName.textContent;
-
-		// Create input for editing
-		const editInput = document.createElement('input');
-		editInput.type = 'text';
-		editInput.value = currentText;
-		editInput.classList.add('task__edit-input');
-
-		// Replace the text span with input
-		taskName.replaceWith(editInput);
-		editInput.focus();
-
-		// Save on Enter
-		editInput.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') {
-				finishEditing();
-			}
-
-			// Cancel with Escape
-			if (e.key === 'Escape') {
-				cancelEditing();
-			}
-		});
-
-		// Save when focus is lost
-		editInput.addEventListener('blur', finishEditing);
-
-		function finishEditing() {
-			const newValue = editInput.value.trim();
-
-			if (!newValue) {
-				cancelEditing();
-				return;
-			}
-
-			if (newValue !== currentText) {
-				tasks = tasks.map((task) => (task.id === taskItem.dataset.id ? { ...task, text: newValue } : task));
-				saveTasks();
-			}
-
-			taskName.textContent = newValue;
-			editInput.replaceWith(taskName);
-		}
-
-		function cancelEditing() {
-			taskName.textContent = currentText;
-			editInput.replaceWith(taskName);
-		}
-	});
-
-	// Delete button
-	const deleteBtn = document.createElement('button');
-	deleteBtn.classList.add('task__btn-delete');
-
-	const trashIcon = document.createElement('i');
-	trashIcon.classList.add('bi', 'bi-trash3');
-
-	deleteBtn.appendChild(trashIcon);
-
-	deleteBtn.addEventListener('click', () => {
-		const itemId = taskItem.dataset.id;
-
-		const confirmed = confirm('Are you sure you want to delete this task?');
-		if (!confirmed) return;
-
-		tasks = tasks.filter((task) => task.id !== itemId);
-		saveTasks();
-
-		taskItem.remove();
-
-		updateClearAllVisibility();
-	});
-
-	// Build label
-	checkLabel.appendChild(checkbox);
-	checkLabel.appendChild(customCheckbox);
-	checkLabel.appendChild(taskName);
-
-	// Build buttons
-	btnGroup.appendChild(editBtn);
-	btnGroup.appendChild(deleteBtn);
-
-	// Assemble task item
-	taskItem.appendChild(checkLabel);
-	taskItem.appendChild(btnGroup);
-
-	// Insert into list
-	taskList.appendChild(taskItem);
-}
-
-// Filter tasks
-function filterTasks(filter) {
-	taskList.innerHTML = '';
-
-	tasks.forEach(task => {
-		if (filter === 'all' || task.category === filter) {
-			renderTask(task);
-		}
-	});
-}
-
-// Update Clear All button visibility
-function updateClearAllVisibility() {
-	let visibleTasks = 0;
-
-	// All tab
-	if (currentFilter === 'all') {
-		visibleTasks = tasks.length;
-	}
-
-	// Work tab
-	else if (currentFilter === 'work') {
-		visibleTasks = tasks.filter(t => t.category === 'work').length;
-	}
-
-	// Personal tab
-	else if (currentFilter === 'personal') {
-		visibleTasks = tasks.filter(t => t.category === 'personal').length;
-	}
-
-	// Change visibility
-	if (visibleTasks === 0) {
-		clearAllBtn.style.display = 'none';
-	} else {
-		clearAllBtn.style.display = 'block';
-	}
-}
-
-// Initialize the app
-function init() {
-	loadTasks();
-	updateClearAllVisibility();
-}
-
-// Create a task
+// Create a new task object
 function createTask(taskText, category) {
 	return {
 		id: crypto.randomUUID(),
@@ -219,7 +45,144 @@ function createTask(taskText, category) {
 	};
 }
 
-// Add a task
+// Render a task to the DOM
+function renderTask(task) {
+	taskList.insertAdjacentHTML('beforeend', createTaskHTML(task));
+}
+
+// Save tasks to local storage
+function saveTasks() {
+	localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Load tasks from local storage
+function loadTasks() {
+	const storedTasks = localStorage.getItem('tasks');
+	if (!storedTasks) return;
+
+	tasks = JSON.parse(storedTasks);
+	filterTasks(currentFilter);
+}
+
+// Filter and display tasks based on category
+function filterTasks(filter) {
+	taskList.innerHTML = '';
+
+	tasks.forEach((task) => {
+		if (filter === 'all' || filter === task.category) {
+			renderTask(task);
+		}
+	});
+}
+
+// Update visibility of the "Clear All" button
+function updateClearAllVisibility() {
+	let visibleTaskCount = 0;
+
+	if (currentFilter === 'all') {
+		visibleTaskCount = tasks.length;
+	} else if (currentFilter === 'work') {
+		const visibleTaskWork = tasks.filter((task) => task.category === 'work');
+		visibleTaskCount = visibleTaskWork.length;
+	} else if (currentFilter === 'personal') {
+		const visibleTaskPersonal = tasks.filter((task) => task.category === 'personal');
+		visibleTaskCount = visibleTaskPersonal.length;
+	}
+
+	if (visibleTaskCount === 0) {
+		clearAllBtn.style.display = 'none';
+	} else {
+		clearAllBtn.style.display = 'block';
+	}
+}
+
+// Initialise the application
+function init() {
+	loadTasks();
+	updateClearAllVisibility();
+}
+
+// Handle task item interactions (delete and edit)
+taskList.addEventListener('click', (e) => {
+	const taskItem = e.target.closest('.task__item');
+	if (!taskItem) return;
+
+	const taskId = taskItem.dataset.id;
+
+	// Delete task
+	if (e.target.closest('.task__btn-delete')) {
+		const confirmed = confirm('Are you sure you want to delete this task?');
+		if (!confirmed) return;
+
+		tasks = tasks.filter(task => task.id !== taskId);
+		saveTasks();
+
+		taskItem.remove();
+		updateClearAllVisibility();
+	}
+
+	// Edit task
+	if (e.target.closest('.task__btn-edit')) {
+		const taskNameSpan = taskItem.querySelector('.task__name');
+		const currentText = taskNameSpan.textContent;
+
+		const editInput = document.createElement('input');
+		editInput.type = 'text';
+		editInput.value = currentText;
+		editInput.classList.add('task__edit-input');
+
+		taskNameSpan.replaceWith(editInput);
+		editInput.focus();
+
+		// Save the edited task
+		function finishEditing() {
+			const newValue = editInput.value.trim();
+
+			if (!newValue) {
+				cancelEditing();
+				return;
+			}
+
+			if (newValue !== currentText) {
+				tasks = tasks.map(task =>
+					task.id === taskId ? {...task, text: newValue } : task
+				);
+				saveTasks();
+			}
+
+			taskNameSpan.textContent = newValue;
+			editInput.replaceWith(taskNameSpan);
+		}
+
+		// Cancel editing and restore original text
+		function cancelEditing() {
+			taskNameSpan.textContent = currentText;
+			editInput.replaceWith(taskNameSpan);
+		}
+
+		editInput.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') finishEditing();
+			if (e.key === 'Escape') cancelEditing();
+		});
+
+		editInput.addEventListener('blur', finishEditing);
+	}
+});
+
+// Handle checkbox state changes
+taskList.addEventListener('change', (e) => {
+	if (e.target.classList.contains('task__checkbox')) {
+		const taskItem = e.target.closest('.task__item');
+		const taskId = taskItem.dataset.id;
+
+		tasks = tasks.map(task =>
+			task.id === taskId ? { ...task, completed: e.target.checked } : task
+		);
+		saveTasks();
+	}
+});
+
+// Handle form submission to add a new task
 addTaskForm.addEventListener('submit', (e) => {
 	e.preventDefault();
 
@@ -236,28 +199,30 @@ addTaskForm.addEventListener('submit', (e) => {
 	tasks.push(newTask);
 	saveTasks();
 
-	renderTask(newTask);
+	if (currentFilter === 'all' || newTask.category === currentFilter) {
+		renderTask(newTask);
+	}
 
 	updateClearAllVisibility();
 
 	taskInput.value = '';
 });
 
-// Current filter
-let currentFilter = 'all';
-
+// Filter: Show all tasks
 filterAll.addEventListener('change', () => {
 	currentFilter = 'all';
 	filterTasks('all');
 	updateClearAllVisibility();
 });
 
-filterWork.addEventListener('change', () => {
+// Filter: Show work tasks only
+filterWork.addEventListener('change', (e) => {
 	currentFilter = 'work';
 	filterTasks('work');
 	updateClearAllVisibility();
 });
 
+// Filter: Show personal tasks only
 filterPersonal.addEventListener('change', () => {
 	currentFilter = 'personal';
 	filterTasks('personal');
@@ -273,11 +238,9 @@ clearAllBtn.addEventListener('click', () => {
 
 	tasks = [];
 	saveTasks();
-
 	updateClearAllVisibility();
-
 	taskList.innerHTML = '';
 });
 
-// Run init() when the DOM is fully loaded
+// Initialise app when DOM is ready
 window.addEventListener('DOMContentLoaded', init);
