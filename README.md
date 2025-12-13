@@ -78,4 +78,4 @@ This project is under active development.
 The current version focuses on core functionality, with UI and usability improvements planned incrementally.
 
 ## 🌐 Live Demo
-https://dailyorganiser-piqicuptp-hatsumi-shimizus-projects.vercel.app/
+[dailyorganiser.vercel.app](https://dailyorganiser.vercel.app/)
