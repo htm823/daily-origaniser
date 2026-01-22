@@ -78,4 +78,4 @@ This project is under active development.
 The current version focuses on core functionality, with UI and usability improvements planned incrementally.
 
 ## 🌐 Live Demo
-[dailyorganiser.vercel.app](https://dailyorganiser.vercel.app/)
+[daily-organiser.vercel.app](https://daily-origaniser.vercel.app/)
